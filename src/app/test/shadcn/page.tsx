@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 
 
-export default function TestShadcn() {
+export default function TestShadcnPage() {
     return (
         <div>
             <div>TestShadcn</div>
