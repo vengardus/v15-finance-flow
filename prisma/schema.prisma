@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Account {
+  id             String           @id
+  slug           String           @unique
+  name           String
+  initialAmount  Float            @default(0)
+  balance        Float            @default(0)
+  description    String?
+  isIncludeTotal Boolean          @default(true)
+  accountTypeId  String
+  currencyId     CurrencyTypeEnum
+  AccountType    AccountType      @relation(fields: [accountTypeId], references: [id])
+  Transaction    Transaction[]
+}
+
+model AccountType {
+  id      String          @id
+  slug    String          @unique
+  name    AccountTypeEnum
+  Account Account[]
+}
+
+model Category {
+  id              String              @id
+  slug            String              @unique
+  description     String
+  transactionType TransactionTypeEnum
+  Subcategory     Subcategory[]
+  Transaction     Transaction[]
+}
+
+model Subcategory {
+  id          String   @id
+  slug        String   @unique
+  description String
+  categoryId  String
+  Category    Category @relation(fields: [categoryId], references: [id])
+}
+
+model Transaction {
+  id              String              @id
+  slug            String              @unique
+  description     String?
+  note            String?
+  date            DateTime
+  amount          Float               @default(0)
+  categoryId      String?
+  accountIdTarget String?
+  accountId       String
+  transactionType TransactionTypeEnum
+  currencyId      CurrencyTypeEnum
+  Account         Account             @relation(fields: [accountId], references: [id])
+  Category        Category?           @relation(fields: [categoryId], references: [id])
+}
+
+enum AccountTypeEnum {
+  CASH
+  BANK
+  CREDIT_CARD
+  DEBIT_CARD
+  SAVINGS
+}
+
+enum CurrencyTypeEnum {
+  PEN
+  USD
+}
+
+enum TransactionTypeEnum {
+  INCOME
+  EXPENSE
+  TRANSFER
+}
